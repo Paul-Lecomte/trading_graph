@@ -1,4 +1,4 @@
-#  Trading Graph
+           #  Trading Graph
 
 ![Build Status](https://img.shields.io/github/actions/workflow/status/Paul-Lecomte/trading_graph/ci.yml?branch=main)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
