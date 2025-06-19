@@ -40,7 +40,33 @@ let chart: IChartApi | null = null;
 let series: ISeriesApi<any> | null = null;
 const legend = ref<HTMLElement | null>(null);
 
-let loadedBars = 5000; // Initial number of visible bars
+const defaultChartOptions = {
+  layout: {
+    background: { color: '#181A20' },
+    textColor: '#C3BCDB',
+    fontFamily: 'Inter, Arial, sans-serif',
+  },
+  grid: {
+    vertLines: { color: '#222' },
+    horzLines: { color: '#222' },
+  },
+  timeScale: {
+    borderColor: '#333',
+    timeVisible: true,
+    secondsVisible: false,
+  },
+  rightPriceScale: {
+    borderColor: '#333',
+    textColor: '#C3BCDB',
+  },
+  crosshair: {
+    mode: 0,
+    vertLine: { color: '#758696', width: 1 as const, style: 2 as const, visible: true, labelVisible: false },
+    horzLine: { color: '#758696', width: 1 as const, style: 2 as const, visible: true, labelVisible: false },
+  },
+};
+
+let loadedBars = 5000;
 
 function getSeriesConstructor(type: string) {
   return {
@@ -78,7 +104,7 @@ function onCrosshairMove(param: any) {
   const bar = props.data.find((d: any) => d.time === param.time);
   if (!bar) return;
 
-  legend.value.innerText = `O: ${bar.open} | H: ${bar.high} | L: ${bar.low} | C: ${bar.close}`;
+  legend.value.innerText = `O: ${bar.open ?? '-'} | H: ${bar.high ?? '-'} | L: ${bar.low ?? '-'} | C: ${bar.close ?? '-'}`;
 }
 
 function onVisibleLogicalRangeChanged(range: any) {
@@ -96,8 +122,11 @@ onMounted(async () => {
   await nextTick();
   legend.value = document.getElementById('legend');
 
-  chart = createChart(chartContainer.value!, props.chartOptions);
-  series = chart.addSeries(getSeriesConstructor(props.type), props.seriesOptions);
+  chart = createChart(
+      chartContainer.value!,
+      { ...defaultChartOptions, ...(props.chartOptions ?? {}) }
+  );
+  series = chart.addSeries(getSeriesConstructor(props.type), props.seriesOptions ?? {});
   series.setData(sliceBars(props.data));
 
   chart.timeScale().fitContent();
@@ -124,7 +153,7 @@ onUnmounted(() => {
 watch(() => props.type, (newType) => {
   if (chart && series) {
     chart.removeSeries(series);
-    series = chart.addSeries(getSeriesConstructor(newType), props.seriesOptions);
+    series = chart.addSeries(getSeriesConstructor(newType), props.seriesOptions ?? {});
     series.setData(sliceBars(props.data));
   }
 });
@@ -135,10 +164,10 @@ watch(() => props.data, (newData) => {
   }
 });
 
-watch(() => props.chartOptions, (opts) => chart?.applyOptions(opts));
-watch(() => props.seriesOptions, (opts) => series?.applyOptions(opts));
-watch(() => props.timeScaleOptions, (opts) => chart?.timeScale().applyOptions(opts));
-watch(() => props.priceScaleOptions, (opts) => chart?.priceScale().applyOptions(opts));
+watch(() => props.chartOptions, (opts) => chart?.applyOptions({ ...defaultChartOptions, ...(opts ?? {}) }));
+watch(() => props.seriesOptions, (opts) => series?.applyOptions(opts ?? {}));
+watch(() => props.timeScaleOptions, (opts) => chart?.timeScale().applyOptions(opts ?? {}));
+watch(() => props.priceScaleOptions, (opts) => chart?.priceScale().applyOptions(opts ?? {}));
 
 function fitContent() {
   chart?.timeScale().fitContent();
@@ -152,6 +181,10 @@ defineExpose({ fitContent });
   height: 400px;
   width: 100%;
   position: relative;
+  background: #181A20;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px #000a;
+  padding: 8px;
 }
 
 .legend {

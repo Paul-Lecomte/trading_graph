@@ -38,7 +38,13 @@ const chartData = ref(generateLineData());
 
 // Options série (line ou candlestick)
 const seriesOptions = ref({
-  color: '#2962FF',
+  color: '#26a69a',
+  upColor: '#26a69a',
+  downColor: '#ef5350',
+  borderVisible: false,
+  wickUpColor: '#26a69a',
+  wickDownColor: '#ef5350',
+  wickVisible: true,
 });
 
 const chartRef = ref();

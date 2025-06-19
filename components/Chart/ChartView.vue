@@ -19,6 +19,16 @@ function changeData(newData: any[]) {
   data.value = newData;
 }
 
+const seriesOptions = ref({
+  color: '#26a69a',
+  upColor: '#26a69a',
+  downColor: '#ef5350',
+  borderVisible: false,
+  wickUpColor: '#26a69a',
+  wickDownColor: '#ef5350',
+  wickVisible: true,
+});
+
 const chartRef = ref();
 
 function fitChart() {
@@ -39,6 +49,7 @@ function fitChart() {
           :type="chartType"
           :data="data"
           :autosize="true"
+          :series-options="seriesOptions"
       />
     </div>
   </div>
