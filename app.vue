@@ -8,7 +8,7 @@ function generateLineData() {
   const data = [];
   const base = Math.floor(Date.now() / 1000);
   for (let i = 0; i < 100; i++) {
-    data.push({ time: base + i * 60, value: Math.random() * 100 });
+    data.push({ time: base + i * 60, value: Math.random() * 300 });
   }
   return data;
 }

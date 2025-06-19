@@ -1,5 +1,10 @@
+<template>
+  <div ref="chartContainer" class="chart-container">
+    <div id="legend" class="legend"></div>
+  </div>
+</template>
+
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, watch, defineProps, defineExpose } from 'vue';
 import {
   createChart,
   LineSeries,
@@ -8,9 +13,17 @@ import {
   CandlestickSeries,
   HistogramSeries,
   BaselineSeries,
+  type IChartApi,
+  type ISeriesApi,
 } from 'lightweight-charts';
-
-import type { IChartApi, ISeriesApi } from 'lightweight-charts';
+import {
+  ref,
+  onMounted,
+  onUnmounted,
+  watch,
+  defineExpose,
+  nextTick,
+} from 'vue';
 
 const props = defineProps({
   type: { type: String, default: 'line' },
@@ -24,7 +37,10 @@ const props = defineProps({
 
 const chartContainer = ref<HTMLElement>();
 let chart: IChartApi | null = null;
-let series: ISeriesApi | null = null;
+let series: ISeriesApi<any> | null = null;
+const legend = ref<HTMLElement | null>(null);
+
+let loadedBars = 5000; // Initial number of visible bars
 
 function getSeriesConstructor(type: string) {
   return {
@@ -44,15 +60,52 @@ function resize() {
   }
 }
 
-onMounted(() => {
+function sliceBars(data: any[]) {
+  const len = data.length;
+  const start = Math.max(0, len - loadedBars);
+  return data.slice(start, len);
+}
+
+function onCrosshairMove(param: any) {
+  if (
+      !param ||
+      param.time === undefined ||
+      param.point.x < 0 ||
+      param.point.y < 0 ||
+      !legend.value
+  ) return;
+
+  const bar = props.data.find((d: any) => d.time === param.time);
+  if (!bar) return;
+
+  legend.value.innerText = `O: ${bar.open} | H: ${bar.high} | L: ${bar.low} | C: ${bar.close}`;
+}
+
+function onVisibleLogicalRangeChanged(range: any) {
+  if (!series || !props.data) return;
+
+  const barsInfo = series.barsInLogicalRange(range);
+  if (barsInfo && barsInfo.barsBefore < 50) {
+    loadedBars += 5000;
+    const sliced = sliceBars(props.data);
+    series.setData(sliced);
+  }
+}
+
+onMounted(async () => {
+  await nextTick();
+  legend.value = document.getElementById('legend');
+
   chart = createChart(chartContainer.value!, props.chartOptions);
   series = chart.addSeries(getSeriesConstructor(props.type), props.seriesOptions);
-  series.setData(props.data);
+  series.setData(sliceBars(props.data));
 
+  chart.timeScale().fitContent();
   if (props.timeScaleOptions) chart.timeScale().applyOptions(props.timeScaleOptions);
   if (props.priceScaleOptions) chart.priceScale().applyOptions(props.priceScaleOptions);
 
-  chart.timeScale().fitContent();
+  chart.subscribeCrosshairMove(onCrosshairMove);
+  chart.timeScale().subscribeVisibleLogicalRangeChange(onVisibleLogicalRangeChanged);
 
   if (props.autosize) {
     window.addEventListener('resize', resize);
@@ -72,12 +125,14 @@ watch(() => props.type, (newType) => {
   if (chart && series) {
     chart.removeSeries(series);
     series = chart.addSeries(getSeriesConstructor(newType), props.seriesOptions);
-    series.setData(props.data);
+    series.setData(sliceBars(props.data));
   }
 });
 
 watch(() => props.data, (newData) => {
-  series?.setData(newData);
+  if (series) {
+    series.setData(sliceBars(newData));
+  }
 });
 
 watch(() => props.chartOptions, (opts) => chart?.applyOptions(opts));
@@ -92,6 +147,23 @@ function fitContent() {
 defineExpose({ fitContent });
 </script>
 
-<template>
-  <div ref="chartContainer" style="height: 400px; width: 100%;"></div>
-</template>
+<style scoped>
+.chart-container {
+  height: 400px;
+  width: 100%;
+  position: relative;
+}
+
+.legend {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 4px 8px;
+  font-size: 12px;
+  border-radius: 4px;
+  z-index: 10;
+  pointer-events: none;
+  font-family: monospace;
+}
+</style>
