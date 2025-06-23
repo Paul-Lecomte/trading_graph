@@ -69,7 +69,6 @@ function updateType(type: string) {
     };
   }
 }
-
 function changeColors() {
   if (chartType.value === 'candlestick') {
     const upColor = '#' + Math.floor(Math.random() * 16777215).toString(16);
