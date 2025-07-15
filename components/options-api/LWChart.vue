@@ -39,7 +39,7 @@ const addSeriesAndData = (type, seriesOptions, data) => {
   series.setData(data);
 };
 
-// Auto resizes the chart when the browser window is resized
+// Auto resizes the chart when the browser window is resized meh
 const resizeHandler = container => {
   if (!chart || !container) return;
   const dimensions = container.getBoundingClientRect();
