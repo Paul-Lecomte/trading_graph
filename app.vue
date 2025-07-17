@@ -13,7 +13,7 @@ function generateLineData() {
   return data;
 }
 
-// Génération données candlestick bugged for some reason meh
+// Génération données candlestick bugged for some reason
 function generateCandleData() {
   const data = [];
   const base = Math.floor(Date.now() / 1000);
