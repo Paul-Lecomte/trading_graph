@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// This component provides a toolbar for the chart with buttons to change the chart type, data, colors, and fit content.
 const emit = defineEmits<{
   (e: 'change-type', type: string): void;
   (e: 'change-data'): void;
