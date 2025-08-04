@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// file used to test the ChartContainer component
 import { ref } from 'vue';
 import ChartContainer from '@/components/Chart/ChartContainer.vue';
 import Toolbar from '@/components/Chart/Toolbar.vue';
