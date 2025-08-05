@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// This component is used to display a chart with a toolbar for changing the chart type and data
 import { ref } from 'vue';
 import ChartContainer from '../Chart/ChartContainer.vue';
 import Toolbar from '../Chart/Toolbar.vue';
