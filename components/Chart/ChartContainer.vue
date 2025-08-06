@@ -5,6 +5,7 @@
 </template>
 
 <script setup lang="ts">
+// This component is used to create a chart using the Lightweight Charts library.
 import {
   createChart,
   LineSeries,
