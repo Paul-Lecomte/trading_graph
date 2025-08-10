@@ -61,3 +61,32 @@ This project is for educational purposes and uses the open-source Lightweight Ch
 ---
 
 > _Made with ❤️ for learning and experimentation._
+
+## Advanced C++ Example
+
+This repository primarily hosts a Nuxt/Vue application, but it also includes an advanced modern C++20 example demonstrating concepts, CRTP, strong types, constexpr algorithms, fold expressions, ranges, and lightweight type erasure.
+
+File location:
+- examples\advanced_cpp_examples.cpp
+
+Build and run on Windows (PowerShell):
+
+1. Ensure you have a C++20-capable compiler installed (MinGW g++ or LLVM clang++).
+2. From the project root, create an output directory if it doesn't exist:
+   ```powershell
+   if (!(Test-Path .\bin)) { New-Item -ItemType Directory -Path .\bin | Out-Null }
+   ```
+3. Compile with g++ (MinGW):
+   ```powershell
+   g++ -std=c++20 -O2 -Wall -Wextra -pedantic examples\advanced_cpp_examples.cpp -o bin\advanced_cpp_examples.exe
+   ```
+   Or compile with clang++:
+   ```powershell
+   clang++ -std=c++20 -O2 -Wall -Wextra -pedantic examples\advanced_cpp_examples.cpp -o bin\advanced_cpp_examples.exe
+   ```
+4. Run:
+   ```powershell
+   .\bin\advanced_cpp_examples.exe
+   ```
+
+The example outputs results for unit-strong types, a variadic fold-sum, CRTP-based printable objects, a type-erased drawable scene, and uses ranges to generate prime numbers.

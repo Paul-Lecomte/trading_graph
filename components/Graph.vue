@@ -1,4 +1,5 @@
 <script setup>
+// This component is used to display a chart with various options for customization
 import { ref } from 'vue';
 import LWChart from '../components/options-api/LWChart.vue';
 
